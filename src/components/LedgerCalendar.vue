@@ -394,25 +394,42 @@ const formatAmount = (amount: number) => {
             >
               <span>{{ day }}</span>
               <div v-if="getDateData(day)" class="mt-[2px] space-y-[1px]">
-                <!-- 항상 1줄은 금액 노출 (입금/출금 중 하나) -->
+                <!-- 건수가 1~2건일 때: 입금/출금 각각 한 줄씩 표시 -->
                 <p
-                  v-if="getDateData(day).inTotal > 0 || getDateData(day).outTotal > 0"
+                  v-if="getDateData(day).count <= 2 && getDateData(day).inTotal > 0"
+                  class="text-[8px] leading-tight"
+                  :class="isToday(day) ? 'text-white/90' : 'text-emerald-600'"
+                >
+                  +{{ formatAmount(getDateData(day).inTotal) }}
+                </p>
+                <p
+                  v-if="getDateData(day).count <= 2 && getDateData(day).outTotal > 0"
+                  class="text-[8px] leading-tight"
+                  :class="isToday(day) ? 'text-white/90' : 'text-rose-600'"
+                >
+                  -{{ formatAmount(getDateData(day).outTotal) }}
+                </p>
+
+                <!-- 건수가 3건 이상일 때: 상위 1개(+입금 or -출금)만 표시 -->
+                <p
+                  v-if="getDateData(day).count >= 3 && (getDateData(day).inTotal > 0 || getDateData(day).outTotal > 0)"
                   class="text-[8px] leading-tight"
                   :class="isToday(day)
                     ? 'text-white/90'
-                    : getDateData(day).inTotal > 0
+                    : getDateData(day).inTotal >= getDateData(day).outTotal
                       ? 'text-emerald-600'
                       : 'text-rose-600'"
                 >
                   {{
-                    getDateData(day).inTotal > 0
+                    getDateData(day).inTotal >= getDateData(day).outTotal
                       ? '+' + formatAmount(getDateData(day).inTotal)
                       : '-' + formatAmount(getDateData(day).outTotal)
                   }}
                 </p>
-                <!-- 2건 이상이면 금액 아래에 건수도 함께 표시 -->
+
+                <!-- 2건까지는 건수 표시 없음, 3건 이상에서만 건수 추가 -->
                 <p
-                  v-if="getDateData(day).count > 1"
+                  v-if="getDateData(day).count >= 3"
                   class="text-[8px] leading-tight"
                   :class="isToday(day) ? 'text-white/70' : 'text-slate-400'"
                 >
