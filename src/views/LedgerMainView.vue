@@ -330,10 +330,10 @@ const handleDelete = (id: string) => {
         class="flex items-center justify-between px-4 py-[11px]"
       >
         <div class="min-w-0">
-          <p class="text-[14px] font-semibold text-slate-900 truncate flex items-center overflow-visible">
-            {{ item.personName }}
+          <p class="text-[14px] font-semibold text-slate-900 flex items-center">
+            <span class="truncate">{{ item.personName }}</span>
             <span
-              class="ml-1 rounded-full px-[6px] py-[2px] text-[11px] font-medium text-white -translate-y-[1px]"
+              class="ml-1 shrink-0 rounded-full px-[6px] py-[2px] text-[11px] font-medium text-white"
               :style="{ backgroundColor: getTagColor(item.tag) }"
             >
               {{ item.tag }}
