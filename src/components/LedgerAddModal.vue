@@ -99,8 +99,8 @@ const onSubmit = () => {
       </header>
 
       <form class="px-4 py-[13px] space-y-[13px]" @submit.prevent="onSubmit">
-        <div class="flex gap-2">
-          <label class="flex-1 text-[13px] font-medium text-slate-700">
+        <div class="grid grid-cols-2 gap-[0.5rem]">
+          <label class="min-w-0 text-[13px] font-medium text-slate-700">
             날짜
             <input
               v-model="date"
@@ -108,7 +108,7 @@ const onSubmit = () => {
               class="mt-1 w-full h-[40px] min-h-[40px] rounded-lg border border-slate-200 bg-slate-50 px-[13px] text-[14px] outline-none [&::-webkit-date-and-time-value]:text-left"
             />
           </label>
-          <label class="flex-1 text-[13px] font-medium text-slate-700">
+          <label class="min-w-0 text-[13px] font-medium text-slate-700">
             유형
             <div class="mt-1 flex h-[40px] rounded-full bg-slate-100 p-[2px] text-[13px]">
               <button
