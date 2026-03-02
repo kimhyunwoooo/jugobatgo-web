@@ -399,8 +399,11 @@ const handleDelete = (id: string) => {
         </div>
       </article>
 
-      <!-- 빈 목록 (로딩 중일 때는 표시하지 않음) -->
-      <div v-if="!ledger.loading && displayedItems.length === 0" class="py-[34px] text-center text-[14px] text-slate-400">
+      <!-- 빈 목록 (ledger/family 둘 다 로딩이 아닐 때만 표시) -->
+      <div
+        v-if="!ledger.loading && !familyStore.loading && displayedItems.length === 0"
+        class="py-[34px] text-center text-[14px] text-slate-400"
+      >
         내역이 없습니다.
       </div>
     </section>
