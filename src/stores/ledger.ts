@@ -18,7 +18,7 @@ export interface LedgerItem {
 
 export const useLedgerStore = defineStore('ledger', () => {
   const items = ref<LedgerItem[]>([])
-  const loading = ref(false)
+  const loading = ref(true)
   const error = ref<string | null>(null)
 
   const totalIn = computed(() =>
