@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { supabase } from '../supabase'
 import { useAuthStore } from './auth'
+import { useFamilyStore } from './family'
 
 export interface Tag {
   id: string
@@ -19,6 +20,11 @@ const DEFAULT_TAGS: Omit<Tag, 'id'>[] = [
 ]
 
 const getFamilyCode = () => {
+  const familyStore = useFamilyStore()
+  // 가족이 있으면 가족 코드 사용, 없으면 개인 ID
+  if (familyStore.familyCode) {
+    return familyStore.familyCode
+  }
   const authStore = useAuthStore()
   return authStore.getUserId() || 'SINGLE_USER'
 }

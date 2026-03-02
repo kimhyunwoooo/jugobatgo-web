@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, Transition } from 'vue'
 import { useRouter } from 'vue-router'
 import { Search, X, LogOut } from 'lucide-vue-next'
 import { useAuthStore } from '../stores/auth'
 import LedgerMainView from './LedgerMainView.vue'
+import SettingsModal from '../components/SettingsModal.vue'
 
 const router = useRouter()
 const authStore = useAuthStore()
@@ -15,6 +16,7 @@ const userNickname = computed(() => authStore.user?.properties?.nickname || '사
 const userProfileImage = computed(() => authStore.user?.properties?.profile_image || null)
 
 const showSearch = ref(false)
+const showSettings = ref(false)
 const searchQuery = ref('')
 
 const toggleSearch = () => {
@@ -41,18 +43,24 @@ const handleLogout = async () => {
     <!-- 상단 앱바 (LINE 스타일) -->
     <header class="h-[52px] flex items-center justify-between px-4 border-b border-slate-100 bg-white">
       <div class="flex items-center gap-2">
-        <img
-          v-if="userProfileImage"
-          :src="userProfileImage"
-          alt="프로필"
-          class="h-[30px] w-[30px] rounded-full object-cover"
-        />
-        <div
-          v-else
-          class="h-[30px] w-[30px] rounded-full bg-[#00C300] flex items-center justify-center text-white text-[12px] font-semibold"
+        <button
+          type="button"
+          class="rounded-full focus:outline-none focus:ring-2 focus:ring-emerald-300"
+          @click="showSettings = true"
         >
-          家
-        </div>
+          <img
+            v-if="userProfileImage"
+            :src="userProfileImage"
+            alt="프로필"
+            class="h-[30px] w-[30px] rounded-full object-cover"
+          />
+          <div
+            v-else
+            class="h-[30px] w-[30px] rounded-full bg-[#00C300] flex items-center justify-center text-white text-[12px] font-semibold"
+          >
+            家
+          </div>
+        </button>
         <div v-if="!showSearch" class="leading-tight">
           <p class="text-[11px] text-slate-500">주고받고 - {{ userNickname }}</p>
           <p class="text-[14px] font-semibold text-slate-900">
@@ -112,5 +120,15 @@ const handleLogout = async () => {
         <div>주고받고 · 부부 공동 경조사비</div>
       </footer>
     </main>
+
+    <!-- 설정 모달 -->
+    <Teleport to="body">
+      <Transition name="modal">
+        <SettingsModal
+          v-if="showSettings"
+          @close="showSettings = false"
+        />
+      </Transition>
+    </Teleport>
   </div>
 </template>

@@ -47,7 +47,7 @@ for (let i = 0; i < 100; i++) {
     amount: randomItem(amounts),
     tag: tag,
     memo: randomItem(memos[tag]),
-    family_code: 'SINGLE_USER',
+    family_code: '4775847678',
   })
 }
 
