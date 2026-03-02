@@ -34,35 +34,67 @@ export const useAuthStore = defineStore('auth', () => {
     loading.value = true
     initializeKakao()
 
-    // 로컬 스토리지에서 사용자 정보 복원
+    // 저장된 토큰과 사용자 정보 복원
+    const savedToken = localStorage.getItem('kakao_token')
     const savedUser = localStorage.getItem('kakao_user')
-    if (savedUser) {
+
+    if (savedToken && savedUser) {
       try {
-        user.value = JSON.parse(savedUser)
+        // 토큰을 SDK에 설정
+        window.Kakao.Auth.setAccessToken(savedToken)
+        
+        // 토큰 유효성 검증 (API 호출로 확인)
+        window.Kakao.API.request({
+          url: '/v2/user/me',
+          success: (res: KakaoUser) => {
+            user.value = res
+            // 최신 정보로 업데이트
+            localStorage.setItem('kakao_user', JSON.stringify(res))
+            loading.value = false
+          },
+          fail: () => {
+            // 토큰이 만료되었거나 유효하지 않음
+            clearStoredAuth()
+            loading.value = false
+          },
+        })
       } catch {
-        localStorage.removeItem('kakao_user')
+        clearStoredAuth()
+        loading.value = false
       }
+    } else {
+      loading.value = false
     }
 
     isInitialized.value = true
-    loading.value = false
+  }
+
+  const clearStoredAuth = () => {
+    localStorage.removeItem('kakao_token')
+    localStorage.removeItem('kakao_user')
+    user.value = null
+    if (window.Kakao?.Auth) {
+      window.Kakao.Auth.setAccessToken(null)
+    }
   }
 
   const signInWithKakao = () => {
     initializeKakao()
     
     window.Kakao.Auth.login({
-      success: async (authObj: any) => {
+      success: (authObj: any) => {
         console.log('카카오 로그인 성공', authObj)
+        
+        // 토큰 저장
+        localStorage.setItem('kakao_token', authObj.access_token)
         
         // 사용자 정보 가져오기
         window.Kakao.API.request({
           url: '/v2/user/me',
-          success: async (res: KakaoUser) => {
+          success: (res: KakaoUser) => {
             console.log('사용자 정보', res)
             user.value = res
             localStorage.setItem('kakao_user', JSON.stringify(res))
-            
           },
           fail: (err: any) => {
             console.error('사용자 정보 요청 실패', err)
@@ -86,11 +118,9 @@ export const useAuthStore = defineStore('auth', () => {
       })
     }
     
-    user.value = null
-    localStorage.removeItem('kakao_user')
+    clearStoredAuth()
   }
 
-  // 사용자 ID 반환 (family_code로 사용)
   const getUserId = () => {
     return user.value ? String(user.value.id) : null
   }
