@@ -1,20 +1,16 @@
 <script setup lang="ts">
-import { watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 
 const router = useRouter()
 const authStore = useAuthStore()
 
-const handleKakaoLogin = () => {
-  authStore.signInWithKakao()
-}
-
-watch(() => authStore.isLoggedIn, (loggedIn) => {
-  if (loggedIn) {
+const handleKakaoLogin = async () => {
+  const success = await authStore.signInWithKakao()
+  if (success) {
     router.push('/')
   }
-})
+}
 </script>
 
 <template>

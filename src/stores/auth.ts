@@ -25,48 +25,69 @@ export const useAuthStore = defineStore('auth', () => {
   const KAKAO_JS_KEY = 'af87e3fa7eb2e00158da62151630e58d'
 
   const initializeKakao = () => {
-    if (window.Kakao && !window.Kakao.isInitialized()) {
-      window.Kakao.init(KAKAO_JS_KEY)
+    if (!window.Kakao) {
+      console.error('Kakao SDK가 로드되지 않았습니다.')
+      return false
     }
+    if (!window.Kakao.isInitialized()) {
+      window.Kakao.init(KAKAO_JS_KEY)
+      console.log('Kakao SDK 초기화 완료')
+    }
+    return true
   }
 
-  const initialize = async () => {
-    loading.value = true
-    initializeKakao()
-
-    // 저장된 토큰과 사용자 정보 복원
-    const savedToken = localStorage.getItem('kakao_token')
-    const savedUser = localStorage.getItem('kakao_user')
-
-    if (savedToken && savedUser) {
-      try {
-        // 토큰을 SDK에 설정
-        window.Kakao.Auth.setAccessToken(savedToken)
-        
-        // 토큰 유효성 검증 (API 호출로 확인)
-        window.Kakao.API.request({
-          url: '/v2/user/me',
-          success: (res: KakaoUser) => {
-            user.value = res
-            // 최신 정보로 업데이트
-            localStorage.setItem('kakao_user', JSON.stringify(res))
-            loading.value = false
-          },
-          fail: () => {
-            // 토큰이 만료되었거나 유효하지 않음
-            clearStoredAuth()
-            loading.value = false
-          },
-        })
-      } catch {
-        clearStoredAuth()
+  const initialize = (): Promise<void> => {
+    return new Promise((resolve) => {
+      loading.value = true
+      
+      if (!initializeKakao()) {
         loading.value = false
+        isInitialized.value = true
+        resolve()
+        return
       }
-    } else {
-      loading.value = false
-    }
 
-    isInitialized.value = true
+      // 저장된 토큰과 사용자 정보 복원
+      const savedToken = localStorage.getItem('kakao_token')
+      const savedUser = localStorage.getItem('kakao_user')
+
+      if (savedToken && savedUser) {
+        try {
+          // 토큰을 SDK에 설정
+          window.Kakao.Auth.setAccessToken(savedToken)
+          
+          // 토큰 유효성 검증 (API 호출로 확인)
+          window.Kakao.API.request({
+            url: '/v2/user/me',
+            success: (res: KakaoUser) => {
+              console.log('자동 로그인 성공:', res)
+              user.value = res
+              localStorage.setItem('kakao_user', JSON.stringify(res))
+              loading.value = false
+              isInitialized.value = true
+              resolve()
+            },
+            fail: (err: any) => {
+              console.log('토큰 만료, 재로그인 필요:', err)
+              clearStoredAuth()
+              loading.value = false
+              isInitialized.value = true
+              resolve()
+            },
+          })
+        } catch (e) {
+          console.error('자동 로그인 오류:', e)
+          clearStoredAuth()
+          loading.value = false
+          isInitialized.value = true
+          resolve()
+        }
+      } else {
+        loading.value = false
+        isInitialized.value = true
+        resolve()
+      }
+    })
   }
 
   const clearStoredAuth = () => {
@@ -78,39 +99,57 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
-  const signInWithKakao = () => {
-    initializeKakao()
-    
-    window.Kakao.Auth.login({
-      success: (authObj: any) => {
-        console.log('카카오 로그인 성공', authObj)
-        
-        // 토큰 저장
-        localStorage.setItem('kakao_token', authObj.access_token)
-        
-        // 사용자 정보 가져오기
-        window.Kakao.API.request({
-          url: '/v2/user/me',
-          success: (res: KakaoUser) => {
-            console.log('사용자 정보', res)
-            user.value = res
-            localStorage.setItem('kakao_user', JSON.stringify(res))
-          },
-          fail: (err: any) => {
-            console.error('사용자 정보 요청 실패', err)
-            alert('사용자 정보를 가져오는데 실패했습니다.')
-          },
-        })
-      },
-      fail: (err: any) => {
-        console.error('카카오 로그인 실패', err)
-        alert('로그인에 실패했습니다.')
-      },
+  const signInWithKakao = (): Promise<boolean> => {
+    return new Promise((resolve) => {
+      if (!initializeKakao()) {
+        alert('카카오 SDK를 불러오지 못했습니다. 페이지를 새로고침해주세요.')
+        resolve(false)
+        return
+      }
+      
+      console.log('카카오 로그인 시도...')
+      
+      window.Kakao.Auth.login({
+        success: (authObj: any) => {
+          console.log('카카오 로그인 성공:', authObj)
+          
+          // 토큰 저장
+          localStorage.setItem('kakao_token', authObj.access_token)
+          
+          // 사용자 정보 가져오기
+          window.Kakao.API.request({
+            url: '/v2/user/me',
+            success: (res: KakaoUser) => {
+              console.log('사용자 정보:', res)
+              user.value = res
+              localStorage.setItem('kakao_user', JSON.stringify(res))
+              resolve(true)
+            },
+            fail: (err: any) => {
+              console.error('사용자 정보 요청 실패:', err)
+              alert('사용자 정보를 가져오는데 실패했습니다.')
+              resolve(false)
+            },
+          })
+        },
+        fail: (err: any) => {
+          console.error('카카오 로그인 실패:', err)
+          if (err.error === 'access_denied') {
+            alert('로그인이 취소되었습니다.')
+          } else {
+            alert('로그인에 실패했습니다: ' + (err.error_description || err.error || '알 수 없는 오류'))
+          }
+          resolve(false)
+        },
+      })
     })
   }
 
   const signOut = async () => {
-    initializeKakao()
+    if (!initializeKakao()) {
+      clearStoredAuth()
+      return
+    }
     
     if (window.Kakao.Auth.getAccessToken()) {
       window.Kakao.Auth.logout(() => {
