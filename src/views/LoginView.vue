@@ -18,9 +18,11 @@ const handleKakaoLogin = async () => {
     <div class="w-full max-w-sm">
       <!-- 로고 영역 -->
       <div class="text-center mb-8">
-        <div class="inline-flex items-center justify-center w-[72px] h-[72px] rounded-3xl bg-[#00C300] text-white text-[28px] font-bold mb-4">
-          家
-        </div>
+        <img
+          src="/icon-192x192.png"
+          alt="주고받고"
+          class="w-[72px] h-[72px] rounded-3xl mx-auto mb-4"
+        />
         <h1 class="text-[22px] font-bold text-slate-900">주고받고</h1>
         <p class="text-[14px] text-slate-500 mt-1">가족 경조사 내역을 함께 관리해요</p>
       </div>
