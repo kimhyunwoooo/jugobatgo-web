@@ -347,8 +347,8 @@ const handleDelete = (id: string) => {
       </div>
     </section>
 
-    <!-- 내역 리스트 -->
-    <section v-else class="bg-white rounded-xl border border-slate-100 divide-y divide-slate-100">
+    <!-- 내역 리스트 (깜박임 방지를 위해 최소 높이 확보) -->
+    <section v-else class="bg-white rounded-xl border border-slate-100 divide-y divide-slate-100 min-h-screen">
       <article
         v-for="item in displayedItems"
         :key="item.id"
