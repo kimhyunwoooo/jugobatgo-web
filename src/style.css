@@ -16,3 +16,12 @@ body,
   padding: 0;
   min-height: 100%;
 }
+
+/* iOS Safari에서 date input 너비 문제가 있어 기본 appearance를 제거해 width 100%가 적용되도록 함
+   참고: https://yehey-study.tistory.com/entry/Next-js-input-typedate-width-%EC%A0%81%EC%9A%A9-%EC%9D%B4%EC%8A%88 */
+input[type='date'] {
+  -webkit-appearance: none;
+  appearance: none;
+  display: block;
+  width: 100%;
+}
