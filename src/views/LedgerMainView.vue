@@ -363,16 +363,16 @@ const handleDelete = (id: string) => {
       </div>
     </section>
 
-    <!-- 로딩 상태 (목록과 동일 높이 + 더 아래 배치) -->
-    <section v-if="ledger.loading" class="bg-white rounded-xl border border-slate-100 pt-[160px] pb-[52px] min-h-screen">
+    <!-- 로딩 상태 -->
+    <section v-if="ledger.loading" class="bg-white rounded-xl border border-slate-100 pt-[160px] pb-[52px]">
       <div class="flex flex-col items-center justify-center gap-2">
         <Loader2 class="w-[26px] h-[26px] text-[#00C300] animate-spin" />
         <p class="text-[13px] text-slate-400">내역을 불러오는 중...</p>
       </div>
     </section>
 
-    <!-- 내역 리스트 (깜박임 방지를 위해 최소 높이 확보) -->
-    <section v-else class="bg-white rounded-xl border border-slate-100 divide-y divide-slate-100 min-h-screen">
+    <!-- 내역 리스트 -->
+    <section v-else class="bg-white rounded-xl border border-slate-100 divide-y divide-slate-100">
       <article
         v-for="item in displayedItems"
         :key="item.id"
