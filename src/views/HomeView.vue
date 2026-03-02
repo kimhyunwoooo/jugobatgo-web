@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, ref, Transition } from 'vue'
 import { useRouter } from 'vue-router'
-import { Search, X, LogOut } from 'lucide-vue-next'
+import { Search, X, LogOut, Settings } from 'lucide-vue-next'
 import { useAuthStore } from '../stores/auth'
 import LedgerMainView from './LedgerMainView.vue'
 import SettingsModal from '../components/SettingsModal.vue'
@@ -45,7 +45,7 @@ const handleLogout = async () => {
       <div class="flex items-center gap-2">
         <button
           type="button"
-          class="rounded-full focus:outline-none focus:ring-2 focus:ring-emerald-300"
+          class="relative rounded-full focus:outline-none focus:ring-2 focus:ring-emerald-300"
           @click="showSettings = true"
         >
           <img
@@ -60,6 +60,9 @@ const handleLogout = async () => {
           >
             家
           </div>
+          <span class="absolute -bottom-[2px] -right-[2px] w-[14px] h-[14px] rounded-full bg-white border border-slate-200 flex items-center justify-center">
+            <Settings class="w-[9px] h-[9px] text-slate-500" />
+          </span>
         </button>
         <div v-if="!showSearch" class="leading-tight">
           <p class="text-[11px] text-slate-500">주고받고 - {{ userNickname }}</p>
