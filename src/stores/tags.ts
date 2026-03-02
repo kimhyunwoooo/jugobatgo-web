@@ -32,6 +32,7 @@ const getFamilyCode = () => {
 export const useTagsStore = defineStore('tags', () => {
   const tags = ref<Tag[]>([])
   const loading = ref(false)
+  const familyStore = useFamilyStore()
 
   const fetchTags = async () => {
     loading.value = true
@@ -49,9 +50,18 @@ export const useTagsStore = defineStore('tags', () => {
     }
 
     if (data && data.length > 0) {
-      tags.value = data
-    } else {
+      // 이름 기준 중복 제거 (마이그레이션 시 중복 생성된 경우)
+      const seen = new Set<string>()
+      tags.value = data.filter((t) => {
+        if (seen.has(t.name)) return false
+        seen.add(t.name)
+        return true
+      })
+    } else if (!familyStore.isInFamily) {
+      // 가족이 아닐 때만 기본 태그 생성 (가족이면 생성자 데이터 대기)
       await initDefaultTags()
+    } else {
+      tags.value = []
     }
     loading.value = false
   }
