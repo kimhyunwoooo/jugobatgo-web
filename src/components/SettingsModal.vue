@@ -236,3 +236,26 @@ const copyCode = async () => {
     </div>
   </div>
 </template>
+
+<style scoped>
+.modal-enter-active,
+.modal-leave-active {
+  transition: opacity 0.2s ease;
+}
+
+.modal-enter-from,
+.modal-leave-to {
+  opacity: 0;
+}
+
+.modal-enter-active .w-full,
+.modal-leave-active .w-full {
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.modal-enter-from .w-full,
+.modal-leave-to .w-full {
+  transform: scale(0.95);
+  opacity: 0;
+}
+</style>
