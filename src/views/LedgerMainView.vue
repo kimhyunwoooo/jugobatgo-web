@@ -33,13 +33,29 @@ const handleRefresh = () => {
   refetchData()
 }
 
-onMounted(() => {
-  refetchData()
-})
+// 최초 1회는 familyStore 로딩이 끝난 뒤에만 fetch
+const hasFetchedOnce = ref(false)
 
-watch(() => familyStore.familyCode, () => {
-  refetchData()
-})
+watch(
+  () => familyStore.loading,
+  (isLoading) => {
+    if (!isLoading && !hasFetchedOnce.value) {
+      refetchData()
+      hasFetchedOnce.value = true
+    }
+  },
+  { immediate: true },
+)
+
+// 이후 패밀리 코드가 변경될 때만 다시 fetch
+watch(
+  () => familyStore.familyCode,
+  (code, prev) => {
+    if (hasFetchedOnce.value && code && code !== prev) {
+      refetchData()
+    }
+  },
+)
 
 const displayCount = ref(10)
 const LOAD_MORE_COUNT = 5
