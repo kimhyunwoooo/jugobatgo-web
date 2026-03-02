@@ -55,8 +55,16 @@ onMounted(() => {
 
 const onSubmit = () => {
   const parsedAmount = Number(amount.value.replace(/,/g, ''))
-  if (!personName.value.trim() || !parsedAmount) {
-    alert('이름과 금액을 입력해주세요.')
+  if (!date.value) {
+    alert('날짜를 입력해주세요.')
+    return
+  }
+  if (!personName.value.trim()) {
+    alert('이름을 입력해주세요.')
+    return
+  }
+  if (!parsedAmount) {
+    alert('금액을 입력해주세요.')
     return
   }
 
