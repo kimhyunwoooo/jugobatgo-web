@@ -193,7 +193,7 @@ const handleDelete = (id: string) => {
     <div class="flex gap-2">
       <button
         type="button"
-        class="flex-[8] flex items-center justify-center gap-2 rounded-xl bg-[#00C300] text-white text-[15px] font-semibold py-[13px]"
+        class="flex-[8] h-[48px] flex items-center justify-center gap-2 rounded-xl bg-[#00C300] text-white text-[15px] font-semibold"
         @click="openAdd"
       >
         <PlusCircle class="w-[22px] h-[22px]" />
