@@ -25,3 +25,10 @@ input[type='date'] {
   display: block;
   width: 100%;
 }
+
+/* iOS Safari에서 date 텍스트 세로 중앙 정렬 */
+input[type='date']::-webkit-date-and-time-value {
+  height: 100%;
+  display: inline-flex;
+  align-items: center;
+}
