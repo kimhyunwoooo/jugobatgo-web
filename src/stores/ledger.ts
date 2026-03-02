@@ -47,7 +47,7 @@ export const useLedgerStore = defineStore('ledger', () => {
       .select('id, date, amount, type, tag, person_name, memo')
       .eq('family_code', familyCode)
       .order('date', { ascending: false })
-      .order('created_at', { ascending: false })
+      .order('amount', { ascending: false })
 
     if (err) {
       error.value = err.message
@@ -98,8 +98,11 @@ export const useLedgerStore = defineStore('ledger', () => {
       personName: data.person_name,
       memo: data.memo ?? '',
     })
-    // 날짜 내림차순 정렬
-    items.value.sort((a, b) => b.date.localeCompare(a.date))
+    // 날짜 내림차순, 같은 날은 금액 내림차순
+    items.value.sort((a, b) => {
+      const dateCmp = b.date.localeCompare(a.date)
+      return dateCmp !== 0 ? dateCmp : b.amount - a.amount
+    })
   }
 
   const deleteItem = async (id: string) => {
@@ -144,8 +147,11 @@ export const useLedgerStore = defineStore('ledger', () => {
         personName: data.person_name,
         memo: data.memo ?? '',
       }
-      // 날짜 내림차순 정렬
-      items.value.sort((a, b) => b.date.localeCompare(a.date))
+      // 날짜 내림차순, 같은 날은 금액 내림차순
+      items.value.sort((a, b) => {
+        const dateCmp = b.date.localeCompare(a.date)
+        return dateCmp !== 0 ? dateCmp : b.amount - a.amount
+      })
     }
   }
 
