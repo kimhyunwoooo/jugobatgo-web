@@ -119,8 +119,8 @@ const handleLogout = async () => {
         <LedgerMainView :searchQuery="searchQuery" />
       </section>
 
-      <footer class="mt-4 flex items-center justify-between text-[12px] text-slate-400">
-        <div>주고받고 · 부부 공동 경조사비</div>
+      <footer class="mt-4 flex items-center justify-center text-[11px] text-slate-400">
+        <div>Copyright © 태이서네 집. All rights reserved.</div>
       </footer>
     </main>
 
