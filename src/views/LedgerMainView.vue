@@ -201,7 +201,7 @@ const handleDelete = (id: string) => {
       </button>
       <button
         type="button"
-        class="aspect-square shrink-0 flex items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-500 hover:bg-slate-50"
+        class="w-[48px] h-[48px] shrink-0 flex items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-500 hover:bg-slate-50"
         :disabled="ledger.loading"
         title="데이터 새로고침"
         @click="handleRefresh"
