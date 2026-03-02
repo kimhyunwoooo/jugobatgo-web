@@ -380,7 +380,7 @@ const formatAmount = (amount: number) => {
             <div
               v-for="(day, index) in calendarDays"
               :key="index"
-              class="aspect-square p-[2px]"
+              class="h-[68px] p-[2px]"
             >
             <button
               v-if="day"
@@ -460,7 +460,7 @@ button:active {
 }
 
 .calendar-grid-wrapper {
-  min-height: 320px;
+  min-height: 420px;
   overflow: hidden;
 }
 
