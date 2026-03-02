@@ -99,18 +99,16 @@ const onSubmit = () => {
       </header>
 
       <form class="px-4 py-[13px] space-y-[13px]" @submit.prevent="onSubmit">
-        <div class="grid grid-cols-2 gap-[0.5rem]">
-          <label class="min-w-0 block text-[13px] font-medium text-slate-700">
+        <div class="flex gap-2">
+          <label class="flex-1 text-[13px] font-medium text-slate-700">
             날짜
-            <div class="mt-1 w-full h-[40px] overflow-hidden">
-              <input
-                v-model="date"
-                type="date"
-                class="date-input w-full min-w-0 h-full rounded-lg border border-slate-200 bg-slate-50 px-[13px] text-[14px] outline-none [&::-webkit-date-and-time-value]:text-left"
-              />
-            </div>
+            <input
+              v-model="date"
+              type="date"
+              class="mt-1 w-full h-[40px] rounded-lg border border-slate-200 bg-slate-50 px-[13px] text-[14px] outline-none"
+            />
           </label>
-          <label class="min-w-0 text-[13px] font-medium text-slate-700">
+          <label class="flex-1 text-[13px] font-medium text-slate-700">
             유형
             <div class="mt-1 flex h-[40px] rounded-full bg-slate-100 p-[2px] text-[13px]">
               <button
@@ -221,15 +219,5 @@ input, textarea {
 input:focus, textarea:focus {
   border-color: #00C300;
   box-shadow: 0 0 0 2px rgba(0, 195, 0, 0.1);
-}
-
-/* iOS date input 높이·너비 통일 */
-input[type="date"].date-input {
-  display: block;
-  box-sizing: border-box;
-  line-height: 1.2;
-  width: 100% !important;
-  min-width: 0;
-  max-width: 100%;
 }
 </style>
