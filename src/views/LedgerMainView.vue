@@ -3,6 +3,7 @@ import { onMounted, onUnmounted, ref, computed, watch, Transition } from 'vue'
 import { CalendarDays, Filter, PlusCircle, Trash2, Pencil, Tag, X, Loader2 } from 'lucide-vue-next'
 import { useLedgerStore, type LedgerItem } from '../stores/ledger'
 import { useTagsStore } from '../stores/tags'
+import { useFamilyStore } from '../stores/family'
 import LedgerAddModal from '../components/LedgerAddModal.vue'
 import LedgerCalendar from '../components/LedgerCalendar.vue'
 import TagManageModal from '../components/TagManageModal.vue'
@@ -13,6 +14,7 @@ const props = defineProps<{
 
 const ledger = useLedgerStore()
 const tagsStore = useTagsStore()
+const familyStore = useFamilyStore()
 const showAdd = ref(false)
 const showCalendar = ref(false)
 const showTagManage = ref(false)
@@ -22,9 +24,17 @@ const selectedTag = ref<string | null>(null)
 const selectedType = ref<'ALL' | 'IN' | 'OUT'>('ALL')
 const editingItem = ref<LedgerItem | null>(null)
 
-onMounted(() => {
+const refetchData = () => {
   ledger.fetchAll()
   tagsStore.fetchTags()
+}
+
+onMounted(() => {
+  refetchData()
+})
+
+watch(() => familyStore.familyCode, () => {
+  refetchData()
 })
 
 const displayCount = ref(10)

@@ -75,6 +75,12 @@ export const useFamilyStore = defineStore('family', () => {
 
       family.value = familyData
 
+      // 생성자인 경우: 기존 데이터(user_id로 저장된)를 패밀리 코드로 마이그레이션
+      if (familyData.created_by === userId) {
+        await supabase.from('ledgers').update({ family_code: familyData.code }).eq('family_code', userId)
+        await supabase.from('tags').update({ family_code: familyData.code }).eq('family_code', userId)
+      }
+
       // 가족 구성원 조회
       await fetchMembers(familyData.id)
     } catch (e) {
@@ -156,6 +162,10 @@ export const useFamilyStore = defineStore('family', () => {
         loading.value = false
         return null
       }
+
+      // 기존 데이터를 새 패밀리 코드로 마이그레이션 (ledgers, tags)
+      await supabase.from('ledgers').update({ family_code: code }).eq('family_code', userId)
+      await supabase.from('tags').update({ family_code: code }).eq('family_code', userId)
 
       family.value = newFamily
       await fetchMembers(newFamily.id)
