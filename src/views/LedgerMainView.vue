@@ -364,8 +364,11 @@ const handleDelete = (id: string) => {
     </section>
 
     <!-- 로딩 상태 -->
-    <section v-if="ledger.loading" class="bg-white rounded-xl border border-slate-100 pt-[160px] pb-[52px]">
-      <div class="flex flex-col items-center justify-center gap-2">
+    <section
+      v-if="ledger.loading"
+      class="bg-white rounded-xl border border-slate-100 py-[52px] flex items-center justify-center"
+    >
+      <div class="flex flex-col items-center gap-2">
         <Loader2 class="w-[26px] h-[26px] text-[#00C300] animate-spin" />
         <p class="text-[13px] text-slate-400">내역을 불러오는 중...</p>
       </div>
