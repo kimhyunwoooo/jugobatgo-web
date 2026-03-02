@@ -105,7 +105,7 @@ const onSubmit = () => {
             <input
               v-model="date"
               type="date"
-              class="mt-1 w-full rounded-lg border border-slate-200 bg-slate-50 px-[13px] py-[9px] text-[14px] outline-none"
+              class="mt-1 w-full h-[40px] min-h-[40px] rounded-lg border border-slate-200 bg-slate-50 px-[13px] text-[14px] outline-none [&::-webkit-date-and-time-value]:text-left"
             />
           </label>
           <label class="flex-1 text-[13px] font-medium text-slate-700">
@@ -219,5 +219,13 @@ input, textarea {
 input:focus, textarea:focus {
   border-color: #00C300;
   box-shadow: 0 0 0 2px rgba(0, 195, 0, 0.1);
+}
+
+/* iOS date input 높이 통일 */
+input[type="date"] {
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+  line-height: 1.2;
 }
 </style>
