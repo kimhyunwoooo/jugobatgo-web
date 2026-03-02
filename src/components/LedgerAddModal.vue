@@ -102,11 +102,13 @@ const onSubmit = () => {
         <div class="flex gap-2">
           <label class="flex-1 text-[13px] font-medium text-slate-700">
             날짜
-            <input
-              v-model="date"
-              type="date"
-              class="mt-1 w-full h-[40px] rounded-lg border border-slate-200 bg-slate-50 px-[13px] text-[14px] outline-none"
-            />
+            <div class="mt-1">
+              <input
+                v-model="date"
+                type="date"
+                class="block w-full h-[40px] rounded-lg border border-slate-200 bg-slate-50 px-[13px] text-[14px] outline-none"
+              />
+            </div>
           </label>
           <label class="flex-1 text-[13px] font-medium text-slate-700">
             유형
