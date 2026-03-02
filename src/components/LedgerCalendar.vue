@@ -394,9 +394,9 @@ const formatAmount = (amount: number) => {
             >
               <span>{{ day }}</span>
               <div v-if="getDateData(day)" class="mt-[2px] space-y-[1px]">
-                <!-- 건수가 1개일 때만 금액 노출 (입금/출금 중 하나) -->
+                <!-- 항상 1줄은 금액 노출 (입금/출금 중 하나) -->
                 <p
-                  v-if="getDateData(day).count === 1"
+                  v-if="getDateData(day).inTotal > 0 || getDateData(day).outTotal > 0"
                   class="text-[8px] leading-tight"
                   :class="isToday(day)
                     ? 'text-white/90'
@@ -410,9 +410,9 @@ const formatAmount = (amount: number) => {
                       : '-' + formatAmount(getDateData(day).outTotal)
                   }}
                 </p>
-                <!-- 2건 이상이면 건수만 표시 -->
+                <!-- 2건 이상이면 금액 아래에 건수도 함께 표시 -->
                 <p
-                  v-else
+                  v-if="getDateData(day).count > 1"
                   class="text-[8px] leading-tight"
                   :class="isToday(day) ? 'text-white/70' : 'text-slate-400'"
                 >
