@@ -444,7 +444,7 @@ const handleDelete = (id: string) => {
   <button
     v-if="showScrollTop && !isModalOpen"
     type="button"
-    class="fixed right-6 bottom-6 w-[44px] h-[44px] rounded-full bg-white shadow-md border border-slate-200 flex items-center justify-center text-[#00C300]"
+    class="fixed right-6 bottom-6 w-[44px] h-[44px] rounded-full bg-[#00C300] shadow-md border border-[#00C300] flex items-center justify-center text-white"
     @click="scrollToTop"
   >
     <ChevronUp class="w-[20px] h-[20px]" />
