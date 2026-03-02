@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted, ref, computed, watch, Transition } from 'vue'
-import { CalendarDays, Filter, PlusCircle, Trash2, Pencil, Tag, X, Loader2, RefreshCw } from 'lucide-vue-next'
+import { CalendarDays, Filter, PlusCircle, Trash2, Pencil, Tag, X, Loader2, RefreshCw, ChevronUp } from 'lucide-vue-next'
 import { useLedgerStore, type LedgerItem } from '../stores/ledger'
 import { useTagsStore } from '../stores/tags'
 import { useFamilyStore } from '../stores/family'
@@ -19,6 +19,7 @@ const showAdd = ref(false)
 const showCalendar = ref(false)
 const showTagManage = ref(false)
 const showFilterPanel = ref(false)
+const showScrollTop = ref(false)
 const selectedDate = ref<string | null>(null)
 const selectedTag = ref<string | null>(null)
 const selectedType = ref<'ALL' | 'IN' | 'OUT'>('ALL')
@@ -94,6 +95,13 @@ const handleScroll = () => {
   if (scrollY + windowHeight >= documentHeight - 100 && hasMore.value) {
     displayCount.value += LOAD_MORE_COUNT
   }
+
+  // 스크롤이 충분히 내려갔고, 아이템이 어느 정도 이상이면 TOP 버튼 노출
+  showScrollTop.value = scrollY > 400 && displayedItems.value.length > 20
+}
+
+const scrollToTop = () => {
+  window.scrollTo({ top: 0, behavior: 'smooth' })
 }
 
 onMounted(() => {
@@ -431,6 +439,16 @@ const handleDelete = (id: string) => {
       </p>
     </div>
   </div>
+
+  <!-- 맨 위로 가기 버튼 (데이터가 많고 아래로 충분히 스크롤된 경우) -->
+  <button
+    v-if="showScrollTop && !isModalOpen"
+    type="button"
+    class="fixed right-6 bottom-6 w-[44px] h-[44px] rounded-full bg-white shadow-md border border-slate-200 flex items-center justify-center text-[#00C300]"
+    @click="scrollToTop"
+  >
+    <ChevronUp class="w-[20px] h-[20px]" />
+  </button>
 
   <!-- 모달들 (space-y-4 밖으로 이동) -->
   <Teleport to="body">
