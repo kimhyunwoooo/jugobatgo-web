@@ -380,7 +380,7 @@ const formatAmount = (amount: number) => {
             <div
               v-for="(day, index) in calendarDays"
               :key="index"
-              class="h-[68px] p-[2px]"
+              class="h-[60px] p-[2px]"
             >
             <button
               v-if="day"
@@ -394,22 +394,25 @@ const formatAmount = (amount: number) => {
             >
               <span>{{ day }}</span>
               <div v-if="getDateData(day)" class="mt-[2px] space-y-[1px]">
+                <!-- 건수가 1개일 때만 금액 노출 (입금/출금 중 하나) -->
                 <p
-                  v-if="getDateData(day).inTotal > 0"
+                  v-if="getDateData(day).count === 1"
                   class="text-[8px] leading-tight"
-                  :class="isToday(day) ? 'text-white/90' : 'text-emerald-600'"
+                  :class="isToday(day)
+                    ? 'text-white/90'
+                    : getDateData(day).inTotal > 0
+                      ? 'text-emerald-600'
+                      : 'text-rose-600'"
                 >
-                  +{{ formatAmount(getDateData(day).inTotal) }}
+                  {{
+                    getDateData(day).inTotal > 0
+                      ? '+' + formatAmount(getDateData(day).inTotal)
+                      : '-' + formatAmount(getDateData(day).outTotal)
+                  }}
                 </p>
+                <!-- 2건 이상이면 건수만 표시 -->
                 <p
-                  v-if="getDateData(day).outTotal > 0"
-                  class="text-[8px] leading-tight"
-                  :class="isToday(day) ? 'text-white/90' : 'text-rose-600'"
-                >
-                  -{{ formatAmount(getDateData(day).outTotal) }}
-                </p>
-                <p
-                  v-if="getDateData(day).count > 2"
+                  v-else
                   class="text-[8px] leading-tight"
                   :class="isToday(day) ? 'text-white/70' : 'text-slate-400'"
                 >
@@ -421,7 +424,7 @@ const formatAmount = (amount: number) => {
           </div>
         </div>
 
-        <div class="mt-4 pt-[13px] border-t border-slate-100">
+        <div class="pt-[13px] border-t border-slate-100">
           <div class="flex justify-center gap-4 text-[12px] text-slate-500">
             <span class="flex items-center gap-1">
               <span class="w-[9px] h-[9px] rounded-full bg-emerald-500"></span>
@@ -460,7 +463,7 @@ button:active {
 }
 
 .calendar-grid-wrapper {
-  min-height: 420px;
+  min-height: 380px;
   overflow: hidden;
 }
 
