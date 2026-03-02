@@ -124,12 +124,12 @@ const onSubmit = () => {
         </div>
 
         <label class="block text-[13px] font-medium text-slate-700">
-          이름 / 관계
+          이름
           <input
             v-model="personName"
             type="text"
             class="mt-1 w-full rounded-lg border border-slate-200 bg-slate-50 px-[13px] py-[9px] text-[14px] outline-none placeholder:text-slate-300"
-            placeholder="예: 김지은 사촌"
+            placeholder="예: 김현우"
           />
         </label>
 
@@ -137,9 +137,12 @@ const onSubmit = () => {
           금액
           <input
             v-model="amount"
+            type="text"
             inputmode="numeric"
+            pattern="[0-9]*"
             class="mt-1 w-full rounded-lg border border-slate-200 bg-slate-50 px-[13px] py-[9px] text-[14px] outline-none placeholder:text-slate-300"
             placeholder="예: 50000"
+            @input="amount = amount.replace(/[^0-9]/g, '')"
           />
         </label>
 

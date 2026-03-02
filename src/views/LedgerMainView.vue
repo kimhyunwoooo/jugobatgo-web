@@ -442,24 +442,19 @@ const handleDelete = (id: string) => {
 
 .filter-enter-active,
 .filter-leave-active {
-  transition: all 0.25s ease;
-  overflow: hidden;
+  transition: opacity 0.15s ease, transform 0.15s ease;
 }
 
 .filter-enter-from,
 .filter-leave-to {
   opacity: 0;
-  max-height: 0;
-  padding-top: 0;
-  padding-bottom: 0;
-  margin-top: 0;
-  margin-bottom: 0;
+  transform: translateY(-8px);
 }
 
 .filter-enter-to,
 .filter-leave-from {
   opacity: 1;
-  max-height: 300px;
+  transform: translateY(0);
 }
 </style>
 

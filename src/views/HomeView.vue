@@ -107,7 +107,7 @@ const handleLogout = async () => {
     </header>
 
     <!-- 본문 컨테이너 -->
-    <main class="max-w-md mx-auto px-2 py-2">
+    <main class="max-w-[49rem] mx-auto px-2 py-2">
       <section class="bg-white rounded-2xl border border-slate-100 px-2 py-2">
         <p class="text-[12px] text-slate-500 mb-1">
           {{ subtitle }}
