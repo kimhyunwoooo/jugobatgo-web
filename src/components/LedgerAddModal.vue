@@ -1,7 +1,14 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import type { LedgerType } from '../stores/ledger'
+import { ref, onMounted } from 'vue'
+import type { LedgerType, LedgerItem } from '../stores/ledger'
+import { useTagsStore } from '../stores/tags'
 import { X } from 'lucide-vue-next'
+
+const props = defineProps<{
+  editItem?: LedgerItem | null
+}>()
+
+const tagsStore = useTagsStore()
 
 const emit = defineEmits<{
   (e: 'close'): void
@@ -13,6 +20,14 @@ const emit = defineEmits<{
     tag: string
     memo: string
   }): void
+  (e: 'update', data: { id: string, payload: {
+    date: string
+    personName: string
+    type: LedgerType
+    amount: number
+    tag: string
+    memo: string
+  }}): void
 }>()
 
 const today = new Date().toISOString().slice(0, 10)
@@ -24,6 +39,20 @@ const amount = ref('')
 const tag = ref('')
 const memo = ref('')
 
+const isEditMode = ref(false)
+
+onMounted(() => {
+  if (props.editItem) {
+    isEditMode.value = true
+    date.value = props.editItem.date
+    personName.value = props.editItem.personName
+    type.value = props.editItem.type
+    amount.value = String(props.editItem.amount)
+    tag.value = props.editItem.tag
+    memo.value = props.editItem.memo || ''
+  }
+})
+
 const onSubmit = () => {
   const parsedAmount = Number(amount.value.replace(/,/g, ''))
   if (!personName.value.trim() || !parsedAmount) {
@@ -31,41 +60,49 @@ const onSubmit = () => {
     return
   }
 
-  emit('submit', {
+  const payload = {
     date: date.value,
     personName: personName.value.trim(),
     type: type.value,
     amount: parsedAmount,
     tag: tag.value.trim() || '기타',
     memo: memo.value.trim(),
-  })
+  }
+
+  if (isEditMode.value && props.editItem) {
+    emit('update', { id: props.editItem.id, payload })
+  } else {
+    emit('submit', payload)
+  }
   emit('close')
 }
 </script>
 
 <template>
-  <div class="fixed inset-0 z-30 flex items-center justify-center bg-black/40">
-    <div class="w-full max-w-md mx-4 rounded-2xl bg-white shadow-lg">
-      <header class="flex items-center justify-between px-4 py-3 border-b border-slate-100">
-        <h2 class="text-[15px] font-semibold text-slate-900">새 경조사 내역 추가</h2>
-        <button type="button" class="p-1 text-slate-400" @click="emit('close')">
-          <X class="w-4 h-4" />
+  <div class="fixed top-0 left-0 right-0 bottom-0 z-30 flex items-center justify-center bg-black/40 px-4">
+    <div class="w-full max-w-md rounded-2xl bg-white shadow-lg overflow-hidden">
+      <header class="flex items-center justify-between px-4 py-[13px] border-b border-slate-100">
+        <h2 class="text-[16px] font-semibold text-slate-900">
+          {{ isEditMode ? '경조사 내역 수정' : '새 경조사 내역 추가' }}
+        </h2>
+        <button type="button" class="p-[4px] text-slate-400" @click="emit('close')">
+          <X class="w-[18px] h-[18px]" />
         </button>
       </header>
 
-      <form class="px-4 py-3 space-y-3" @submit.prevent="onSubmit">
+      <form class="px-4 py-[13px] space-y-[13px]" @submit.prevent="onSubmit">
         <div class="flex gap-2">
-          <label class="flex-1 text-[12px] font-medium text-slate-700">
+          <label class="flex-1 text-[13px] font-medium text-slate-700">
             날짜
             <input
               v-model="date"
               type="date"
-              class="mt-1 w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-[13px] outline-none"
+              class="mt-1 w-full rounded-lg border border-slate-200 bg-slate-50 px-[13px] py-[9px] text-[14px] outline-none"
             />
           </label>
-          <label class="flex-1 text-[12px] font-medium text-slate-700">
+          <label class="flex-1 text-[13px] font-medium text-slate-700">
             유형
-            <div class="mt-1 flex h-[34px] rounded-full bg-slate-100 p-0.5 text-[11px]">
+            <div class="mt-1 flex h-[40px] rounded-full bg-slate-100 p-[2px] text-[13px]">
               <button
                 type="button"
                 class="flex-1 rounded-full"
@@ -86,60 +123,68 @@ const onSubmit = () => {
           </label>
         </div>
 
-        <label class="block text-[12px] font-medium text-slate-700">
+        <label class="block text-[13px] font-medium text-slate-700">
           이름 / 관계
           <input
             v-model="personName"
             type="text"
-            class="mt-1 w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-[13px] outline-none placeholder:text-slate-300"
+            class="mt-1 w-full rounded-lg border border-slate-200 bg-slate-50 px-[13px] py-[9px] text-[14px] outline-none placeholder:text-slate-300"
             placeholder="예: 김지은 사촌"
           />
         </label>
 
-        <div class="flex gap-2">
-          <label class="flex-1 text-[12px] font-medium text-slate-700">
-            금액
-            <input
-              v-model="amount"
-              inputmode="numeric"
-              class="mt-1 w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-[13px] outline-none placeholder:text-slate-300"
-              placeholder="예: 50000"
-            />
-          </label>
-          <label class="flex-1 text-[12px] font-medium text-slate-700">
-            태그
-            <input
-              v-model="tag"
-              type="text"
-              class="mt-1 w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-[13px] outline-none placeholder:text-slate-300"
-              placeholder="예: 결혼, 장례, 돌잔치"
-            />
-          </label>
+        <label class="block text-[13px] font-medium text-slate-700">
+          금액
+          <input
+            v-model="amount"
+            inputmode="numeric"
+            class="mt-1 w-full rounded-lg border border-slate-200 bg-slate-50 px-[13px] py-[9px] text-[14px] outline-none placeholder:text-slate-300"
+            placeholder="예: 50000"
+          />
+        </label>
+
+        <div class="text-[13px] font-medium text-slate-700">
+          태그
+          <div class="mt-1 flex flex-wrap gap-[6px]">
+            <button
+              v-for="t in tagsStore.tags"
+              :key="t.id"
+              type="button"
+              class="px-[13px] py-[6px] rounded-full text-[12px] font-medium transition-colors"
+              :class="tag === t.name
+                ? 'text-white'
+                : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
+              :style="tag === t.name ? { backgroundColor: t.color } : {}"
+              @click="tag = t.name"
+            >
+              {{ t.name }}
+            </button>
+          </div>
         </div>
 
-        <label class="block text-[12px] font-medium text-slate-700">
+        <label class="block text-[13px] font-medium text-slate-700">
           메모 (선택)
           <textarea
             v-model="memo"
             rows="2"
-            class="mt-1 w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-[13px] outline-none placeholder:text-slate-300 resize-none"
+            class="mt-1 w-full rounded-lg border border-slate-200 bg-slate-50 px-[13px] py-[9px] text-[14px] outline-none placeholder:text-slate-300 resize-none"
             placeholder="예: 축의금, 조의금, 현금 / 계좌이체 등"
           />
         </label>
 
-        <div class="pt-1 pb-2 flex justify-end gap-2 text-[13px]">
+        <div class="pt-1 pb-2 flex justify-end gap-2 text-[14px]">
           <button
             type="button"
-            class="px-3 h-9 rounded-full border border-slate-200 text-slate-600 bg-white"
+            class="px-[13px] h-[38px] rounded-full border border-slate-200 text-slate-600 bg-white"
             @click="emit('close')"
           >
             취소
           </button>
           <button
             type="submit"
-            class="px-4 h-9 rounded-full bg-[#00C300] text-white font-semibold"
+            class="px-[17px] h-[38px] rounded-full bg-[#00C300] text-white font-semibold"
           >
-            저장
+            {{ isEditMode ? '수정' : '저장' }}
           </button>
         </div>
       </form>
@@ -147,3 +192,21 @@ const onSubmit = () => {
   </div>
 </template>
 
+<style scoped>
+button {
+  transition: all 0.15s ease;
+}
+
+button:active {
+  transform: scale(0.97);
+}
+
+input, textarea {
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+input:focus, textarea:focus {
+  border-color: #00C300;
+  box-shadow: 0 0 0 2px rgba(0, 195, 0, 0.1);
+}
+</style>

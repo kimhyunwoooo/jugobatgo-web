@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 import { supabase } from '../supabase'
+import { useAuthStore } from './auth'
 
 export type LedgerType = 'IN' | 'OUT'
 
@@ -26,15 +27,19 @@ export const useLedgerStore = defineStore('ledger', () => {
     items.value.filter((d) => d.type === 'OUT').reduce((s, d) => s + d.amount, 0),
   )
 
-  const FAMILY_CODE = 'SINGLE_USER'
+  const getFamilyCode = () => {
+    const authStore = useAuthStore()
+    return authStore.getUserId() || 'SINGLE_USER'
+  }
 
   const fetchAll = async () => {
     loading.value = true
     error.value = null
+    const familyCode = getFamilyCode()
     const { data, error: err } = await supabase
       .from('ledgers')
       .select('id, date, amount, type, tag, person_name, memo')
-      .eq('family_code', FAMILY_CODE)
+      .eq('family_code', familyCode)
       .order('date', { ascending: false })
       .order('created_at', { ascending: false })
 
@@ -57,6 +62,7 @@ export const useLedgerStore = defineStore('ledger', () => {
   }
 
   const addItem = async (payload: Omit<LedgerItem, 'id'>) => {
+    const familyCode = getFamilyCode()
     const { data, error: err } = await supabase
       .from('ledgers')
       .insert({
@@ -66,7 +72,7 @@ export const useLedgerStore = defineStore('ledger', () => {
         tag: payload.tag,
         person_name: payload.personName,
         memo: payload.memo,
-        family_code: FAMILY_CODE,
+        family_code: familyCode,
       })
       .select('id, date, amount, type, tag, person_name, memo')
       .single()
@@ -99,6 +105,40 @@ export const useLedgerStore = defineStore('ledger', () => {
     }
   }
 
+  const updateItem = async (id: string, payload: Omit<LedgerItem, 'id'>) => {
+    const { data, error: err } = await supabase
+      .from('ledgers')
+      .update({
+        date: payload.date,
+        amount: payload.amount,
+        type: payload.type,
+        tag: payload.tag,
+        person_name: payload.personName,
+        memo: payload.memo,
+      })
+      .eq('id', id)
+      .select('id, date, amount, type, tag, person_name, memo')
+      .single()
+
+    if (err) {
+      alert(`내역 수정 중 오류가 발생했습니다: ${err.message}`)
+      return
+    }
+
+    const index = items.value.findIndex((item) => item.id === id)
+    if (index !== -1) {
+      items.value[index] = {
+        id: data.id,
+        date: data.date,
+        amount: data.amount,
+        type: data.type,
+        tag: data.tag,
+        personName: data.person_name,
+        memo: data.memo ?? '',
+      }
+    }
+  }
+
   return {
     items,
     loading,
@@ -108,6 +148,7 @@ export const useLedgerStore = defineStore('ledger', () => {
     fetchAll,
     addItem,
     deleteItem,
+    updateItem,
   }
 })
 
