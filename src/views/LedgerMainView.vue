@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted, ref, computed, watch, Transition } from 'vue'
-import { CalendarDays, Filter, PlusCircle, Trash2, Pencil, Tag, X, Loader2 } from 'lucide-vue-next'
+import { CalendarDays, Filter, PlusCircle, Trash2, Pencil, Tag, X, Loader2, RefreshCw } from 'lucide-vue-next'
 import { useLedgerStore, type LedgerItem } from '../stores/ledger'
 import { useTagsStore } from '../stores/tags'
 import { useFamilyStore } from '../stores/family'
@@ -27,6 +27,10 @@ const editingItem = ref<LedgerItem | null>(null)
 const refetchData = () => {
   ledger.fetchAll()
   tagsStore.fetchTags()
+}
+
+const handleRefresh = () => {
+  refetchData()
 }
 
 onMounted(() => {
@@ -185,15 +189,26 @@ const handleDelete = (id: string) => {
 
 <template>
   <div class="space-y-4">
-    <!-- 상단: 새 내역 추가 버튼 (주요 CTA) -->
-    <button
-      type="button"
-      class="w-full flex items-center justify-center gap-2 rounded-xl bg-[#00C300] text-white text-[15px] font-semibold py-[13px]"
-      @click="openAdd"
-    >
-      <PlusCircle class="w-[22px] h-[22px]" />
-      새 내역 추가
-    </button>
+    <!-- 상단: 새 내역 추가 + 새로고침 버튼 -->
+    <div class="flex gap-2">
+      <button
+        type="button"
+        class="flex-[8] flex items-center justify-center gap-2 rounded-xl bg-[#00C300] text-white text-[15px] font-semibold py-[13px]"
+        @click="openAdd"
+      >
+        <PlusCircle class="w-[22px] h-[22px]" />
+        새 내역 추가
+      </button>
+      <button
+        type="button"
+        class="flex-[2] flex items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-500 hover:bg-slate-50"
+        :disabled="ledger.loading"
+        title="데이터 새로고침"
+        @click="handleRefresh"
+      >
+        <RefreshCw class="w-[22px] h-[22px]" :class="{ 'animate-spin': ledger.loading }" />
+      </button>
+    </div>
 
     <!-- 필터/캘린더 버튼 영역 -->
     <section class="flex items-center gap-2">
