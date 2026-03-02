@@ -89,7 +89,7 @@ export const useLedgerStore = defineStore('ledger', () => {
       return
     }
 
-    items.value.unshift({
+    items.value.push({
       id: data.id,
       date: data.date,
       amount: data.amount,
@@ -98,6 +98,8 @@ export const useLedgerStore = defineStore('ledger', () => {
       personName: data.person_name,
       memo: data.memo ?? '',
     })
+    // 날짜 내림차순 정렬
+    items.value.sort((a, b) => b.date.localeCompare(a.date))
   }
 
   const deleteItem = async (id: string) => {
